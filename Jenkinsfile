@@ -5,10 +5,7 @@ pipeline {
         maven 'Maven'
     }
 
-    environment {
-        JAR_FILE = "target/MyMavenSeleniumApp01-1.0-SNAPSHOT.jar"
-    }
-
+  
     stages {
 
         stage('Checkout') {
@@ -29,30 +26,11 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
-            }
-        }
-
-        stage('Verify JAR') {
-            steps {
-                sh '''
-                echo "Current directory:"
-                pwd
-
-                echo "Files in target folder:"
-                ls -l target/
-                '''
-            }
-        }
+       
 
         stage('Run Application') {
             steps {
-                sh '''
-                echo "Starting application..."
-                nohup java -jar target/MyMavenSeleniumApp01-1.0-SNAPSHOT.jar > app.log 2>&1 &
-                '''
+                sh 'mvn exec:java -Dexec.mainClass="com.example.App"'
             }
         }
     }
