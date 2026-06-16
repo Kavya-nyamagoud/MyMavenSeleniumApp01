@@ -1,16 +1,11 @@
 pipeline {
-    agent any  
+    agent any
 
     tools {
         maven 'Maven'
     }
 
-    environment {
-        JAR_FILE = "target/MyMavenSeleniumApp01-1.0-SNAPSHOT.jar"
-    }
-
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'master', url: 'https://github.com/Kavya-nyamagoud/MyMavenSeleniumApp01.git'
@@ -19,7 +14,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean package'
             }
         }
 
@@ -29,29 +24,14 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            steps {
-                sh 'mvn package -DskipTests'
-            }
-        }
-
-        stage('Verify JAR') {
-            steps {
-                sh '''
-                echo "Current directory:"
-                pwd
-
-                echo "Files in target folder:"
-                ls -l target/
-                '''
-            }
-        }
-
         stage('Run Application') {
             steps {
                 sh '''
-                echo "Starting application..."
-                nohup java -jar target/MyMavenSeleniumApp01-1.0-SNAPSHOT.jar > app.log 2>&1 &
+                echo "Listing target folder:"
+                ls -l target
+
+                echo "Running correct jar..."
+                java -jar target/MyMavenSeleniumApp01-1.0-SNAPSHOT.jar
                 '''
             }
         }
@@ -59,7 +39,7 @@ pipeline {
 
     post {
         success {
-            echo 'Build and deployment successful!'
+            echo 'Build and execution successful!'
         }
         failure {
             echo 'Build failed!'
